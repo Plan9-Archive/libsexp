@@ -1,5 +1,5 @@
 </$objtype/mkfile
 
-sexp: sexp.c thp.h
+sexp: sexp.c sexp.h
 	$CC sexp.c
 	$LD -o sexp sexp.$O

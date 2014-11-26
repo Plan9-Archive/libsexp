@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <bio.h>
 
-#include "thp.h"
+#include "sexp.h"
 
 Biobuf B[2];
 
