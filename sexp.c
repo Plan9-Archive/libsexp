@@ -1,16 +1,14 @@
 #include <u.h>
 #include <libc.h>
 #include <ctype.h>
+#include <bio.h>
 
 #include "thp.h"
 
-char buf[256];
-int m, n;
+Biobuf B[2];
 
-enum
-{
-	BUFSZ = 255,
-};
+#define B0 (B + 0)
+#define B1 (B + 1)
 
 Cell *
 cons(O car, O cdr)
@@ -55,47 +53,41 @@ mka(char *c)
 }
 
 int
-readmore(void)
-{
-	if(m < n)
-		return n - m;
-	m = 0;
-	n = read(0, buf, BUFSZ);
-	return n;
-}
-
-int
 skipspace(void)
 {
-	for(;; ++m){
-		if(m >= n){
-			if(readmore() < 1)
-				return -1;
-		}
-		if(!isspace(buf[m]))
-			return readmore();
+	int c;
+
+	while((c = Bgetc(B0)) >= 0){
+		if(!isspace(c))
+			break;
 	}
+	return c;
 }
 
 O
-rdatom(void)
+rdatom(int c)
 {
 	int i;
 	char *s;
+
 	s = malloc(ATOMSZ + 1);
 	if(s == nil)
 		return Nilcell();
 
 	for(i = 0; i < ATOMSZ; ++i){
-		if(readmore() < 1)
+		if(!isalnum(c)){
 			break;
-		if(!isalnum(buf[m]))
-			break;
-		s[i] = buf[m++];
+		}
+		s[i] = c;
+		c = Bgetc(B0);
 	}
+	Bungetc(B0);
 	s[i] = '\0';
 
-	//return (O){.a = s, .type = Atom};
+	if(i == 0){
+		free(s);
+		return Nilcell();
+	}
 	return mka(s);
 }
 
@@ -103,44 +95,43 @@ O
 rdlist(void)
 {
 	O car, cdr;
+	int c;
 
-	if(skipspace() < 1)
+	c = skipspace();
+
+	if(c == ')')
 		return Nilcell();
-	if(buf[m] == ')'){
-		m += 1;
-		return Nilcell();
-	}
+
+	Bungetc(B0);
 
 	car = r();
-	if(skipspace() < 1)
-		return Nilcell();
-	if(buf[m] == '.'){
-		m += 1;
+	c = skipspace();
+	if(c == '.'){
 		cdr = r();
-		if(skipspace() < 1)
-			return Nilcell();
-		if(buf[m++] != ')')
+		c = skipspace();
+		if(c != ')')
 			return Nilcell();
 		return mko(cons(car, cdr));
+	}else{
+		Bungetc(B0);
+		cdr = rdlist();
+		return mko(cons(car, cdr));
 	}
-	cdr = rdlist();
-	return mko(cons(car, cdr));
 }
 
 O
 r(void)
 {
 	O car, cdr;
+	int c;
 
-	if(skipspace() < 1)
-		return Nilcell();
+	c = skipspace();
 
-	if(isalnum(buf[m]))
-		return rdatom();
-	if(buf[m++] == '(')
+	if(c == '(')
 		return rdlist();
-	return Nilcell();
-
+	if(!isalnum(c))
+		return Nilcell();
+	return rdatom(c);
 }
 
 void
@@ -194,20 +185,9 @@ void
 main(void)
 {
 	O o;
-	O a, b;
-	O n;
 
-	a.type = Atom;
-	a.a = "hello";
-
-	n.type = Nil;
-	n.o = nil;
-
-	b.type = List;
-	b.o = cons(a, n);
-
-	o.type = List;
-	o.o = cons(a, b);
+	Binit(B0, 0, OREAD);
+	Binit(B1, 1, OWRITE);
 
 	o = r();
 	prin1(o);
