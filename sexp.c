@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <bio.h>
 
-#include "sexp.h"
+#include <sexp.h>
 
 Biobuf B[2];
 
@@ -182,16 +182,8 @@ prin1(O o)
 }
 
 void
-main(void)
+initsexp(void)
 {
-	O o;
-
 	Binit(B0, 0, OREAD);
 	Binit(B1, 1, OWRITE);
-
-	o = r();
-	prin1(o);
-	print("\n");
-
-	exits("");
 }

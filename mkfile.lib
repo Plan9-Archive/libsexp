@@ -1,0 +1,12 @@
+</$objtype/mkfile
+
+LIB=/$objtype/lib/libsexp.a
+
+OFILES=\
+	sexp.$O
+
+HFILES=/sys/include/sexp.h
+
+# What are the system lib mkfiles doing with UPDATE?
+
+</sys/src/cmd/mksyslib

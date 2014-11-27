@@ -1,3 +1,6 @@
+#pragma src "/sys/src/libsexp"
+#pragma lib "libsexp.a"
+
 enum
 {
 	Nil = 0,
@@ -27,3 +30,4 @@ struct Cell
 O r(void);
 void pl(Cell *o, int paren);
 void prin1(O o);
+void initsexp(void);
