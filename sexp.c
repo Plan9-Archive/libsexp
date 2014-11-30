@@ -63,6 +63,24 @@ cons(O car, O cdr)
 	return mko(c);
 }
 
+O
+car(O o)
+{
+	if(o.type != List)
+		return Nilcell();
+
+	return o.o->car;
+}
+
+O
+cdr(O o)
+{
+	if(o.type != List)
+		return Nilcell();
+
+	return o.o->cdr;
+}
+
 int
 skipspace(void)
 {

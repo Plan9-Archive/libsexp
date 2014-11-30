@@ -28,6 +28,9 @@ struct Cell
 
 /* sexp.c */
 char *atomstr(O o);
+O cons(O car, O cdr);
+O car(O o);
+O cdr(O o);
 O r(void);
 void prin1(O o);
 void initsexp(void);
