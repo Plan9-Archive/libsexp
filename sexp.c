@@ -12,6 +12,15 @@ Biobuf B[2];
 
 void pl(Cell *o, int paren);
 
+char *
+atomstr(O o)
+{
+	if(o.type != Atom)
+		return "";
+
+	return o.a;
+}
+
 O
 Nilcell(void)
 {
