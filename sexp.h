@@ -28,6 +28,5 @@ struct Cell
 
 /* sexp.c */
 O r(void);
-void pl(Cell *o, int paren);
 void prin1(O o);
 void initsexp(void);

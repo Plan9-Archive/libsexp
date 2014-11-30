@@ -10,18 +10,7 @@ Biobuf B[2];
 #define B0 (B + 0)
 #define B1 (B + 1)
 
-Cell *
-cons(O car, O cdr)
-{
-	Cell *c;
-
-	c = malloc(sizeof(Cell));
-
-	c->car = car;
-	c->cdr = cdr;
-
-	return c;
-}
+void pl(Cell *o, int paren);
 
 O
 Nilcell(void)
@@ -50,6 +39,19 @@ mka(char *c)
 	o.a = c;
 	o.type = Atom;
 	return o;
+}
+
+O
+cons(O car, O cdr)
+{
+	Cell *c;
+
+	c = malloc(sizeof(Cell));
+
+	c->car = car;
+	c->cdr = cdr;
+
+	return mko(c);
 }
 
 int
@@ -111,18 +113,17 @@ rdlist(void)
 		c = skipspace();
 		if(c != ')')
 			return Nilcell();
-		return mko(cons(car, cdr));
+		return cons(car, cdr);
 	}else{
 		Bungetc(B0);
 		cdr = rdlist();
-		return mko(cons(car, cdr));
+		return cons(car, cdr);
 	}
 }
 
 O
 r(void)
 {
-	O car, cdr;
 	int c;
 
 	c = skipspace();
