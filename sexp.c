@@ -77,9 +77,8 @@ rdatom(int c)
 		return Nilcell();
 
 	for(i = 0; i < ATOMSZ; ++i){
-		if(!isalnum(c)){
+		if(!isgraph(c) || c == '(' || c == ')')
 			break;
-		}
 		s[i] = c;
 		c = Bgetc(B0);
 	}
@@ -130,7 +129,7 @@ r(void)
 
 	if(c == '(')
 		return rdlist();
-	if(!isalnum(c))
+	if(!isprint(c) || c == ')')
 		return Nilcell();
 	return rdatom(c);
 }
