@@ -6,7 +6,7 @@
 void
 main(void)
 {
-	O o;
+	O *o;
 
 	initsexp();
 
