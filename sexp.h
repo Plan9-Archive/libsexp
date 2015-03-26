@@ -22,6 +22,7 @@ struct O
 
 /* sexp.c */
 char *atomstr(O *o);
+O *mka(char *c);
 O *cons(O *car, O *cdr);
 O *car(O *o);
 O *cdr(O *o);
